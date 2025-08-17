@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trò chơi âm nhạc lớp 6</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f9ff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #1d4ed8;
+    }
+
+    .question {
+      margin-top: 20px;
+    }
+
+    .answers button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      background-color: #e0f2fe;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    .answers button:hover {
+      background-color: #bae6fd;
+    }
+
+    .answers button.correct {
+      background-color: #86efac;
+    }
+
+    .answers button.wrong {
+      background-color: #fca5a5;
+    }
+
+    #score {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #reset {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #60a5fa;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎵 Trò chơi âm nhạc: Hành trình học trò 🎵</h1>
+    <div id="quiz"></div>
+    <div id="score"></div>
+    <button id="reset" onclick="resetQuiz()">🔄 Chơi lại</button>
+  </div>
+
+  <!-- Âm thanh phản hồi -->
+  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+  <script>
+    const quizData = [
+      {
+        question: "1. Bài 'Con đường học trò' có nội dung chính nói về điều gì?",
+        answers: ["Tình bạn và kỷ niệm học trò", "Gia đình", "Thiên nhiên", "Trường học mới"],
+        correct: 0
+      },
+      {
+        question: "2. Tác giả của bài 'Con đường học trò' là ai?",
+        answers: ["Phan Văn Minh", "Trần Tiến", "Hoàng Vân", "Hồ Hoài Anh"],
+        correct: 0
+      },
+      {
+        question: "3. Giai điệu của bài 'Tháng năm học trò' có sắc thái như thế nào?",
+        answers: ["Trầm buồn", "Rộn ràng, vui tươi", "Căng thẳng", "Kịch tính"],
+        correct: 1
+      },
+      {
+        question: "4. Bài 'Con đường học trò' có nhịp điệu gì?",
+        answers: ["4/4", "2/4", "3/4", "6/8"],
+        correct: 0
+      },
+      {
+        question: "5. Khi hát bài 'Con đường học trò', cần chú ý điều gì?",
+        answers: ["Hát đúng cao độ và trường độ", "Hát nhanh", "Hát nhỏ", "Hát thấp giọng"],
+        correct: 0
+      },
+      {
+        question: "6. Tên bài hát 'Tháng năm học trò' gợi nhớ điều gì?",
+        answers: ["Những kỷ niệm học trò", "Ngày nghỉ lễ", "Cảnh thiên nhiên", "Mùa xuân"],
+        correct: 0
+      },
+      {
+        question: "7. Khi nghe bài 'Tháng năm học trò', em cảm nhận điều gì?",
+        answers: ["Tình cảm thân thương, trong sáng", "Sợ hãi", "Giận dữ", "Buồn ngủ"],
+        correct: 0
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const quizContainer = document.getElementById("quiz");
+    const scoreDisplay = document.getElementById("score");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+
+    function showQuestion() {
+      const q = quizData[currentQuestion];
+      quizContainer.innerHTML = `
+        <div class="question"><strong>${q.question}</strong></div>
+        <div class="answers">
+          ${q.answers.map((a, i) => `<button onclick="selectAnswer(${i})">${a}</button>`).join("")}
+        </div>
+      `;
+    }
+
+    function selectAnswer(index) {
+      const q = quizData[currentQuestion];
+      const buttons = document.querySelectorAll(".answers button");
+
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correct) {
+          btn.classList.add("correct");
+        } else if (i === index) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      if (index === q.correct) {
+        score++;
+        correctSound.play();
+      } else {
+        wrongSound.play();
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+          showQuestion();
+        } else {
+          showScore();
+        }
+      }, 1000);
+    }
+
+    function showScore() {
+      quizContainer.innerHTML = "<h2>🎉 Bạn đã hoàn thành trò chơi! 🎉</h2>";
+      scoreDisplay.textContent = `Điểm số: ${score}/${quizData.length}`;
+    }
+
+    function resetQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      scoreDisplay.textContent = "";
+      showQuestion();
+    }
+
+    // Bắt đầu trò chơi
+    showQuestion();
+  </script>
+
+</body>
+</html>
